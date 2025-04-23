@@ -1,0 +1,31 @@
+//
+//  String+Ext.swift
+//  GHFollowers
+//
+//  Created by Mohd Tabrez Khan on 04/10/24.
+//  Copyright © 2024 Asghar. All rights reserved.
+//
+
+import Foundation
+
+extension String {
+    
+    func convertToDate() -> Date? {
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        dateFormatter.locale = Locale(identifier: "en_IN")
+        dateFormatter.timeZone = TimeZone.current
+        
+        return dateFormatter.date(from: self)
+    }
+    
+    
+    func convertToDisplayFormat() -> String {
+        guard let date = self.convertToDate() else {
+            return "Date not found"
+        }
+        
+        return date.convertToMonthYearFormat()
+    }
+}
