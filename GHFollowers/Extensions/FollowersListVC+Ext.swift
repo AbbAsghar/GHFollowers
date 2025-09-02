@@ -2,7 +2,7 @@
 //  FollowersListVC+Ext.swift
 //  GHFollowers
 //
-//  Created by Mohd Tabrez Khan on 11/09/24.
+//  Created by Syed Asghar Abbas on 11/09/24.
 //  Copyright © 2024 Asghar. All rights reserved.
 //
 
@@ -31,6 +31,13 @@ extension FollowersListVC: UICollectionViewDataSource, UICollectionViewDelegate,
             self.fetchFollowers(username: self.username, page: self.page)
         }
         
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if let imageCell = cell as? FollowerCell, let requestId = imageCell.cellRequestId {
+            NetworkManager.shared.cancelLoad(requestId)
+        }
     }
     
     

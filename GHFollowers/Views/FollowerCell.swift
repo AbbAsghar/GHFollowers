@@ -2,16 +2,19 @@
 //  FollowerCell.swift
 //  GHFollowers
 //
-//  Created by Mohd Tabrez Khan on 10/09/24.
+//  Created by Syed Asghar Abbas on 10/09/24.
 //  Copyright © 2024 Asghar. All rights reserved.
 //
 
 import UIKit
+//import Alamofire
+//import AlamofireImage
 
 class FollowerCell: UICollectionViewCell {
     
+//    let cache               = NetworkManager.shared.cache
     static let reuseID      = "FollowerCell"
-    
+    var cellRequestId: UUID?
     let avatarImageView     = GHAvatarImageView(frame: .zero)
     let usernameLabel       = GHTitleLabel(textAlignment: .center, fontSize: 16)
     
@@ -24,7 +27,11 @@ class FollowerCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         print("preparing for reuse")
+//        self.currentItemID = nil
         self.avatarImageView.image = UIImage(named: "avatar-placeholder")
+        if let requestId = self.cellRequestId {
+            NetworkManager.shared.cancelLoad(requestId)
+        }
     }
     
     
@@ -35,8 +42,37 @@ class FollowerCell: UICollectionViewCell {
     
     func set(follower: Follower) {
         print("setting follower details")
+//        currentItemID           = follower.avatarUrl
         usernameLabel.text      = follower.login
-        avatarImageView.downloadImage(from: follower.avatarUrl)
+        
+//        avatarImageView.downloadImage(from: follower.avatarUrl)
+        
+        if let requestId = self.cellRequestId {
+            NetworkManager.shared.cancelLoad(requestId)
+        }
+        
+        cellRequestId = NetworkManager.shared.loadImage(from: follower.avatarUrl) { [weak self] image in
+            guard let self = self else { return }
+            
+            guard let image = image else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.avatarImageView.image = image
+            }
+        }
+        
+//        NetworkManager.shared.loadImage(from: follower.avatarUrl) { [weak self] image in
+//            guard let self = self else { return }
+////            guard self.currentItemID == follower.avatarUrl else { return }
+//            self.avatarImageView.image = image
+//        }
+//        loadImage(from: follower.avatarUrl) { [weak self] image in
+//            guard let self = self else { return }
+////            guard self.currentItemID == follower.avatarUrl else { return }
+//            self.avatarImageView.image = image
+//        }
     }
 
     

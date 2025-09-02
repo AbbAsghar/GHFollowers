@@ -2,7 +2,7 @@
 //  GHTitleLabel.swift
 //  GHFollowers
 //
-//  Created by Mohd Tabrez Khan on 05/09/24.
+//  Created by Syed Asghar Abbas on 05/09/24.
 //  Copyright © 2024 Asghar. All rights reserved.
 //
 

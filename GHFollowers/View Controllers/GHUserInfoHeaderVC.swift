@@ -2,7 +2,7 @@
 //  GHUserInfoHeaderVC.swift
 //  GHFollowers
 //
-//  Created by Mohd Tabrez Khan on 20/09/24.
+//  Created by Syed Asghar Abbas on 20/09/24.
 //  Copyright © 2024 Asghar. All rights reserved.
 //
 

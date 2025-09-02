@@ -2,7 +2,7 @@
 //  FavoritesListVC+Ext.swift
 //  GHFollowers
 //
-//  Created by Mohd Tabrez Khan on 17/10/24.
+//  Created by Syed Asghar Abbas on 17/10/24.
 //  Copyright © 2024 Asghar. All rights reserved.
 //
 

@@ -2,18 +2,97 @@
 //  NetworkManager.swift
 //  GHFollowers
 //
-//  Created by Mohd Tabrez Khan on 09/09/24.
+//  Created by Syed Asghar Abbas on 09/09/24.
 //  Copyright © 2024 Asghar. All rights reserved.
 //
 
 import UIKit
+import Alamofire
+//import AlamofireImage
 
 class NetworkManager {
-    static let shared       = NetworkManager()
-    private let baseUrl     = "https://api.github.com/users/"
-    let cache               = NSCache<NSString, UIImage>()
+    static let shared           = NetworkManager()
+    private let baseUrl         = "https://api.github.com/users/"
+    let cache                   = NSCache<NSString, UIImage>()
+    private var runningRequests = [UUID: DataRequest]()
+    
+    private func cacheImage(_ image: UIImage, for key: String) {
+        print("caching image")
+        cache.setObject(image, forKey: key as NSString)
+    }
+
+    private func cachedImage(for key: String) -> UIImage? {
+        return cache.object(forKey: key as NSString)
+    }
     
     private init() {}
+    
+    func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) -> UUID? {
+        if let cachedImage = cachedImage(for: urlString) {
+            print("getting cached image")
+            completion(cachedImage)
+            return nil
+        }
+        let uuid = UUID()
+        
+        let request = AF.request(urlString)
+            .validate(contentType: ["image/*"])
+            .responseData { [weak self] response in
+                guard let self = self else { return }
+                defer { self.runningRequests.removeValue(forKey: uuid) }
+                
+                guard let data = response.data, let image = UIImage(data: data) else {
+                    print("error in data")
+                    completion(nil)
+                    return
+                }
+                self.cacheImage(image, for: urlString)
+                print("returning image")
+                completion(image)
+            }
+        
+        print("running request:", uuid)
+        runningRequests[uuid] = request
+        return uuid
+    }
+    
+    func cancelLoad(_ uuid: UUID) {
+        print("cancelling request:", uuid)
+        runningRequests[uuid]?.cancel()
+        runningRequests.removeValue(forKey: uuid)
+    }
+    
+//    func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
+//        let cacheKey    = NSString(string: urlString)
+//
+//        if let image    = cache.object(forKey: cacheKey) {
+//            print("Cached Image")
+//            completion(image)
+//            return
+//        }
+//
+//        guard let url   = URL(string: urlString) else {
+//            print("url error")
+//            return
+//        }
+//
+//        let task = URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
+//            guard let self      = self else { return }
+//            if let _            = error { return }
+//            guard let response  = response as? HTTPURLResponse, response.statusCode == 200 else { return }
+//            guard let data      = data else { return }
+//
+//            guard let image     = UIImage(data: data) else { return }
+//            self.cache.setObject(image, forKey: cacheKey)
+//
+//            print("downloaded image")
+//            DispatchQueue.main.async {
+//                completion(image)
+//            }
+//        }
+//        task.resume()
+//    }
+    
     
     func getFollowers(for username: String, page: Int, perPage: Int, completed: @escaping ([Follower]?, GHError?) -> Void) {
         print("inside getfollowers")
